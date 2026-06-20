@@ -8,11 +8,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kura.ui.screens.ComponentDetailScreen
 import com.example.kura.ui.screens.ComponentListScreen
 import com.example.kura.ui.screens.HomeScreen
+import com.example.kura.ui.screens.SettingsScreen
 
 object Routes {
     const val HOME = "home"
     const val COMPONENT_LIST = "list/{domain}/{category}"
     const val COMPONENT_DETAIL = "detail/{slug}"
+    const val SETTINGS = "settings"
 }
 
 @Composable
@@ -26,6 +28,11 @@ fun AppNavigation(
         // Home Screen
         composable(Routes.HOME) {
             HomeScreen()
+        }
+
+        // Settings Screen
+        composable(Routes.SETTINGS) {
+            SettingsScreen()
         }
 
         // Component List Screen

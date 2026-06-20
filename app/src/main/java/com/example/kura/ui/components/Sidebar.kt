@@ -122,11 +122,11 @@ fun Sidebar(
 
         Spacer(Modifier.height(16.dp))
 
-        // ---- APP SETTING (hardcoded) ----
-        SidebarSectionHeader("AppSetting")
-        SidebarRow("General") { onItemClick()}
-        SidebarRow("Appearance") { onItemClick()}
-        SidebarRow("Support") { onItemClick()}
+        // ---- APP SETTING (hardcoded) ---
+        SidebarRow("Setting") {
+            navController.navigate("settings")
+            onItemClick()
+        }
     }
 }
 

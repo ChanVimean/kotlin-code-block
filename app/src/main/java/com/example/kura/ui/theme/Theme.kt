@@ -51,7 +51,7 @@ private val DarkColors = darkColorScheme(
  * theme-toggle state so the TopBar 🌙 switch can flip it.
  */
 @Composable
-fun ElegantUITheme(
+fun KuraTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
