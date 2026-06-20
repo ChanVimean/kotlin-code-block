@@ -49,7 +49,7 @@ fun ComponentListScreen(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(components) { component ->
                     ComponentCard(component = component) {
-                        navController.navigate("/detail${component.slug}")
+                        navController.navigate("detail/${component.slug}")
                     }
                 }
             }
