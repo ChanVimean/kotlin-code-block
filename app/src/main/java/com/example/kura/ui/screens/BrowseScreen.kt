@@ -8,7 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -34,6 +40,9 @@ fun BrowseScreen(
     val repo = RepositoryProvider.componentRepository
     val all = repo.getAllComponents()
 
+    // search
+    var searchQuery by remember { mutableStateOf("") }
+
     // null = "All". Only one domain and one category active at a time
     var selectedDomain by remember { mutableStateOf<Domain?>(null) }
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
@@ -41,10 +50,16 @@ fun BrowseScreen(
     // In-memory filtering - no repo change needed
     val filtered = all.filter { component ->
         (selectedDomain == null || component.domain == selectedDomain) &&
-        (selectedCategory == null || component.category == selectedCategory)
+        (selectedCategory == null || component.category == selectedCategory) &&
+        (searchQuery.isBlank() ||
+            component.title.contains(searchQuery, ignoreCase = true) ||
+            component.domain.label.contains(searchQuery, ignoreCase = true)
+        )
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
         Text(
             "Browse",
             style = MaterialTheme.typography.titleMedium,
@@ -58,7 +73,25 @@ fun BrowseScreen(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // ------ FILTER ROW ------
+        // ------ SEARCH ------
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = { Text("Search components") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = ""}) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear")
+                    }
+                }
+            },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+        )
+
         // ------ FILTER ROW ------
         Text(
             "Filter",
@@ -93,6 +126,7 @@ fun BrowseScreen(
                 onClick = {
                     selectedDomain = null
                     selectedCategory = null
+                    searchQuery = ""
                 }
             ) {
                 Text("Reset")
