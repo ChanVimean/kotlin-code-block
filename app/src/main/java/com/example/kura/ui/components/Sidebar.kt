@@ -63,6 +63,10 @@ fun Sidebar(
             navController.navigate("Home")
             onItemClick()
         }
+        SidebarRow("Browse") {                 // ← temporary entry point
+            navController.navigate("browse")
+            onItemClick()
+        }
         SidebarRow("Document") {
             // TODO: document route later
             onItemClick()

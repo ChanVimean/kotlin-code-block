@@ -1,4 +1,4 @@
-package com.example.kura.data.repository
+package com.example.kura.data.preferences
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

@@ -29,15 +29,22 @@ fun ComponentListScreen(
     val domain = domainName?.let { runCatching { Domain.valueOf(it) }.getOrNull() }
     val category = categoryName?.let { runCatching { Category.valueOf(it) }.getOrNull() }
 
-    val components = if (domain != null && category != null) {
-        RepositoryProvider.componentRepository
-            .getComponentsByDomainAndCategory(domain, category)
-    } else emptyList()
+    val repo = RepositoryProvider.componentRepository
+
+    val components = when {
+        domain != null && category != null ->
+            repo.getComponentsByDomainAndCategory(domain, category)
+        domain != null ->
+            repo.getComponentsByDomain(domain)
+        else -> emptyList()
+
+    }
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-        // breadcrumb: Flutter / Button
+        // breadcrumb adapts: "Flutter / Button"  OR  just "Flutter"
         Text(
-            "${domain?.name ?: "?"} / ${category?.name ?: "?"}",
+            if (category != null) "${domain?.label ?: "?"} / ${category.label}"
+            else domain?.label ?: "?",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)

@@ -1,18 +1,25 @@
 package com.example.kura.ui.components
 
 import android.annotation.SuppressLint
+import android.webkit.WebView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.kura.data.model.ComponentSection
 
 /* ----------------------------------------------------------------------------
@@ -125,43 +132,61 @@ private fun Placeholder(
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun CodeBlockComposable(section: ComponentSection.CodeBlock) {
-//    val html = remember(section.code, section.language) {
-//        buildHighlightHtml(section.code, section.language)
-//    }
-//    AndroidView(
-//        factory = { context ->
-//            WebView(context).apply {
-//                settings.javaScriptEnabled = true
-//                setBackgroundColor(android.graphics.Color.TRANSPARENT)
-//            }
-//        },
-//        update = { webView ->
-//            webView.loadDataWithBaseURL(
-//                "https://localhost/",
-//                html,
-//                "text/html",
-//                "utf-8",
-//                null
-//            )
-//        },
-//        modifier = Modifier.fillMaxWidth()
-//    )
-
-    Placeholder("CODE (${section.language})") {
-        Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                section.code,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = FontFamily.Monospace
-                ),
-                modifier = Modifier.padding(12.dp)
-            )
-        }
+    val html = remember(section.code, section.language) {
+        buildHighlightHtml(section.code, section.language)
     }
+    var webViewHeight by remember { mutableIntStateOf(0) }
+    val density = LocalDensity.current
+
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = true
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                isVerticalScrollBarEnabled = false
+                isScrollContainer = false
+                addJavascriptInterface(object {
+                    @android.webkit.JavascriptInterface
+                    fun reportHeight(heightPx: Float) {
+                        post {
+                            webViewHeight = with(density) { heightPx.dp.roundToPx() }
+                        }
+                    }
+                }, "AndroidBridge")
+            }
+        },
+        update = { webView ->
+            webView.loadDataWithBaseURL(
+                "file:///android_asset/",
+                html,
+                "text/html",
+                "utf-8",
+                null
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (webViewHeight > 0) Modifier.height(with(density) { webViewHeight.toDp() })
+                else Modifier
+            )
+    )
 }
+
+//    Placeholder("CODE (${section.language})") {
+//        Surface(
+//            color = MaterialTheme.colorScheme.surfaceVariant,
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            Text(
+//                section.code,
+//                style = MaterialTheme.typography.bodySmall.copy(
+//                    fontFamily = FontFamily.Monospace
+//                ),
+//                modifier = Modifier.padding(12.dp)
+//            )
+//        }
+//    }
 
 private fun buildHighlightHtml(code: String, language: String): String {
     val escaped = code
@@ -173,7 +198,7 @@ private fun buildHighlightHtml(code: String, language: String): String {
         <!DOCTYPE html>
         <html>
             <head>
-                <link rel="stylesheet" href="file:///android_asset/prism.css">
+                <link rel="stylesheet" href="file:///android_asset/highlight.min.css">
                 <style>
                     body { margin: 0; background: transparent; }
                     pre { margin: 0; padding: 12px; font-size: 14px; overflow-x: auto; }
@@ -181,7 +206,13 @@ private fun buildHighlightHtml(code: String, language: String): String {
             </head>
             <body>
                 <pre><code class="language-$language">$escaped</code></pre>
-                <script src="file:///android_asset/prism.js"></script>
+                <script src="file:///android_asset/highlight.min.js"></script>
+                <script>
+                    hljs.highlightAll();
+                    window.onload = function() {
+                        AndroidBridge.reportHeight(document.body.scrollHeight);
+                    };
+                </script>
             </body>
         </html>
     """.trimIndent()
