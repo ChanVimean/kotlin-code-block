@@ -40,7 +40,7 @@ fun AppNavigation(
 
         // Settings Screen
         composable(Routes.SETTINGS) {
-            SettingsScreen()
+            SettingsScreen(navController)
         }
 
         // Component List Screen
@@ -67,7 +67,7 @@ fun AppNavigation(
         // Component Detail
         composable(Routes.COMPONENT_DETAIL) { backStackEntry ->
             val slug = backStackEntry.arguments?.getString("slug")
-            ComponentDetailScreen(slug = slug)
+            ComponentDetailScreen(slug = slug, navController = navController)
         }
     }
 }

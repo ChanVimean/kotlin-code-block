@@ -9,18 +9,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.kura.data.repository.RepositoryProvider
+import com.example.kura.ui.components.KuraTopBar
 import com.example.kura.ui.components.SectionRenderer
 
 @Composable
 fun ComponentDetailScreen(
-    slug: String?
+    slug: String?,
+    navController: NavHostController
 ) {
     // Look up the component by slug
     val component = slug?.let {
@@ -38,26 +42,37 @@ fun ComponentDetailScreen(
         return
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-        // Domain / Category label in accent
-        Text(
-            "${component.domain.name} / ${component.category.name}",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
-        )
+    Scaffold(
+        topBar = {
+            KuraTopBar(
+                navController = navController,
+                title = "Back"
+            )
+        }
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+            ) {
+                // Domain / Category label in accent
+                Text(
+                    "${component.domain.name} / ${component.category.name}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
 
-        Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
 
-        // the block renderer — your proven engine
-        SectionRenderer(
-            sections = component.sections,
-            modifier = Modifier.fillMaxWidth()
-        )
+                // the block renderer — your proven engine
+                SectionRenderer(
+                    sections = component.sections,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
