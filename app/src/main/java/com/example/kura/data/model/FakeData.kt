@@ -73,7 +73,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/flutter_button.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Flutter", "Widget", "Button", "Material")
                 )
@@ -134,7 +134,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/flutter_gradient_button.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Flutter", "Button", "Gradient", "CTA")
                 )
@@ -190,7 +190,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/flutter_info_card.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Flutter", "Card", "Material")
                 )
@@ -232,7 +232,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/react_card.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("React", "Card", "Profile", "JSX")
                 )
@@ -279,7 +279,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/react_icon_button.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("React", "Button", "Icon", "JSX")
                 )
@@ -331,7 +331,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/kotlin_gradient_text.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Kotlin", "Compose", "Text", "Gradient")
                 )
@@ -371,7 +371,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/kotlin_centered_box.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Kotlin", "Compose", "Layout", "Box")
                 )
@@ -418,7 +418,7 @@ object FakeData {
                         }
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/kotlin_photo_grid.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Kotlin", "Compose", "Grid", "Layout")
                 )
@@ -476,7 +476,7 @@ object FakeData {
                         </style>
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/vue_primary_button.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Vue", "Button", "SFC", "Component")
                 )
@@ -517,7 +517,7 @@ object FakeData {
                         </script>
                     """.trimIndent()
                 ),
-                ComponentSection.ResultImage("assets/vue_stat_card.png"),
+                ComponentSection.ResultImage("placeholder.png"),
                 ComponentSection.Tags(
                     listOf("Vue", "Card", "Dashboard", "SFC")
                 )

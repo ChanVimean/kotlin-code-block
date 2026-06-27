@@ -3,20 +3,23 @@ package com.example.kura.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,96 +60,91 @@ fun BrowseScreen(
         )
     }
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp)) {
-        Text(
-            "Browse",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            "${filtered.size} component${if (filtered.size == 1) "" else "s"}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        // ------ SEARCH ------
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text("Search components") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { searchQuery = ""}) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear")
-                    }
-                }
-            },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)
-        )
-
-        // ------ FILTER ROW ------
-        Text(
-            "Filter",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            FilterDropdown(
-                label = "Framework",
-                selected = selectedDomain?.label ?: "All",
-                options = Domain.entries.map { it.label },
-                onAll = { selectedDomain = null },
-                onPick = { index -> selectedDomain = Domain.entries[index] },
-                modifier = Modifier.weight(1f)
-            )
-            FilterDropdown(
-                label = "Component",
-                selected = selectedCategory?.label ?: "All",
-                options = Category.entries.map { it.label },
-                onAll = { selectedCategory = null },
-                onPick = { index -> selectedCategory = Category.entries[index] },
-                modifier = Modifier.weight(1f)
-            )
-            TextButton(
-                onClick = {
-                    selectedDomain = null
-                    selectedCategory = null
-                    searchQuery = ""
-                }
-            ) {
-                Text("Reset")
-            }
-        }
-
-        // ---- RESULTS ----
-        if (filtered.isEmpty()) {
-            Text("No components match these filters")
-        } else {
-            LazyVerticalGrid(
-                GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                items(filtered) { component ->
-                    ComponentCard(component = component) {
-                        navController.navigate("detail/${component.slug}")
+            // ---- CONTROLS (full-width, scrolls away with content) ----
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Column {
+                    // header: title + count left, refresh right — one row
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Browse",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "${filtered.size} component${if (filtered.size == 1) "" else "s"}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.weight(1f))
+                        IconButton(onClick = {
+                            selectedDomain = null
+                            selectedCategory = null
+                            searchQuery = ""
+                        }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Reset filters")
+                        }
                     }
+
+                    // search
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        placeholder = { Text("Search components") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                IconButton(onClick = { searchQuery = "" }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+
+                    // filters
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterDropdown(
+                            label = "Framework",
+                            selected = selectedDomain?.label ?: "All",
+                            options = Domain.entries.map { it.label },
+                            onAll = { selectedDomain = null },
+                            onPick = { index -> selectedDomain = Domain.entries[index] },
+                            modifier = Modifier.weight(1f)
+                        )
+                        FilterDropdown(
+                            label = "Component",
+                            selected = selectedCategory?.label ?: "All",
+                            options = Category.entries.map { it.label },
+                            onAll = { selectedCategory = null },
+                            onPick = { index -> selectedCategory = Category.entries[index] },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+
+            // ---- CARDS ----
+            items(filtered) { component ->
+                ComponentCard(component = component) {
+                    navController.navigate("detail/${component.slug}")
                 }
             }
         }

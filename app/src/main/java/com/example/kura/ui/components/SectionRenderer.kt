@@ -2,24 +2,29 @@ package com.example.kura.ui.components
 
 import android.annotation.SuppressLint
 import android.webkit.WebView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.kura.R
 import com.example.kura.data.model.ComponentSection
 
 /* ----------------------------------------------------------------------------
@@ -67,44 +72,62 @@ fun SectionRenderer(
  */
 @Composable
 private fun HeaderComposable(section: ComponentSection.Header) {
-    Placeholder("HEADER") {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(section.title, style = MaterialTheme.typography.headlineSmall)
         section.subtitle?.let {
-            Text(it, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                it,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
 
 @Composable
 private fun TextComposable(section: ComponentSection.TextBlock) {
-    Placeholder("TEXTBLOCK") {
-        Text(section.body, style = MaterialTheme.typography.bodyLarge)
-    }
+    Text(section.body, style = MaterialTheme.typography.bodyLarge)
 }
+
 
 @Composable
 private fun BulletListComposable(section: ComponentSection.BulletList) {
-    Placeholder("BULLET LIST") {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         section.items.forEach { item ->
             Text("• $item", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
 
+@SuppressLint("LocalContextResourcesRead", "DiscouragedApi")
 @Composable
 private fun ResultImageComposable(section: ComponentSection.ResultImage) {
-    Placeholder("RESULT IMAGE") {
-        Text("image → ${section.assetPath}", style = MaterialTheme.typography.bodyMedium)
+    val context = LocalContext.current
+    val resId = remember(section.assetPath) {
+        context.resources.getIdentifier(
+            section.assetPath,   // e.g. "flutter_button"
+            "drawable",
+            context.packageName
+        )
     }
+
+    val finalResId = if (resId != 0) resId else R.drawable.placeholder
+
+    Image(
+        painter = painterResource(id = finalResId),
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp)),
+        contentScale = ContentScale.FillWidth
+    )
 }
 
 @Composable
 private fun TagsComposable(section: ComponentSection.Tags) {
-    Placeholder("TAGS") {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            section.tags.forEach { tag ->
-                Text("#$tag", style = MaterialTheme.typography.labelMedium)
-            }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        section.tags.forEach { tag ->
+            Text("#$tag", style = MaterialTheme.typography.labelMedium)
         }
     }
 }
@@ -113,20 +136,20 @@ private fun TagsComposable(section: ComponentSection.Tags) {
  * Temporary wrapper so each placeholder block is visually obvious on screen
  * (labeled, boxed). Delete this once the real composables are in.
  */
-@Composable
-private fun Placeholder(
-    label: String,
-    content: @Composable () -> Unit
-) {
-    Column(Modifier.padding(12.dp)) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary
-        )
-        content()
-    }
-}
+//@Composable
+//private fun Placeholder(
+//    label: String,
+//    content: @Composable () -> Unit
+//) {
+//    Column(Modifier.padding(12.dp)) {
+//        Text(
+//            label,
+//            style = MaterialTheme.typography.labelSmall,
+//            color = MaterialTheme.colorScheme.primary
+//        )
+//        content()
+//    }
+//}
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -172,21 +195,6 @@ private fun CodeBlockComposable(section: ComponentSection.CodeBlock) {
             )
     )
 }
-
-//    Placeholder("CODE (${section.language})") {
-//        Surface(
-//            color = MaterialTheme.colorScheme.surfaceVariant,
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text(
-//                section.code,
-//                style = MaterialTheme.typography.bodySmall.copy(
-//                    fontFamily = FontFamily.Monospace
-//                ),
-//                modifier = Modifier.padding(12.dp)
-//            )
-//        }
-//    }
 
 private fun buildHighlightHtml(code: String, language: String): String {
     val escaped = code
