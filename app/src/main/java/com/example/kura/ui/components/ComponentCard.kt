@@ -75,6 +75,7 @@ fun ComponentCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
+                minLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
 

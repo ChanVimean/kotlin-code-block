@@ -40,7 +40,6 @@ fun ComponentListScreen(
         domain != null ->
             repo.getComponentsByDomain(domain)
         else -> emptyList()
-
     }
 
     Scaffold(
